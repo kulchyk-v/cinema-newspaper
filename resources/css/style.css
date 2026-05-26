@@ -60,17 +60,17 @@ body {
 }
 
 /* =========================================
-   3. MENU FILTRI (Uguale a pagina articoli)
+   3. MENU FILTRI & HAMBURGER
    ========================================= */
 .filter-menu {
     background-color: #0b3d91;
     padding: 15px 0;
-    width: 100%; /* Occupa tutta la larghezza */
+    width: 100%;
 }
 
 .menu-wrapper {
     display: flex;
-    justify-content: center; /* Centra il contenuto (hamburger o ul) */
+    justify-content: center; 
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
@@ -79,13 +79,14 @@ body {
 .filter-menu ul {
     list-style: none;
     display: flex;
-    justify-content: center; /* Centra i link orizzontalmente */
+    justify-content: center; 
     align-items: center;
     gap: 40px;
     margin: 0;
     padding: 0;
     width: 100%;
 }
+
 .filter-menu li a {
     color: #90caf9;
     text-decoration: none;
@@ -93,13 +94,30 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: 0.3s ease;
+    transition: color 0.3s ease, font-weight 0.3s ease;
 }
 
 .filter-menu li a:hover,
 .filter-menu li a.active {
     color: #ffffff !important;
     font-weight: 600;
+}
+
+.hamburger {
+    display: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    width: 30px;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+    transition: 0.3s;
 }
 
 /* =========================================
@@ -127,25 +145,18 @@ body {
 }
 
 /* =========================================
-   5. SLIDER SECTION (Corretta per Full Width)
+   5. SLIDER SECTION (Full Width)
    ========================================= */
 .slider-section {
-    /* Rimosso background-image qui se vuoi che si vedano solo le foto dello slider */
     background-color: #000; 
-    padding: 0; /* Rimosso padding per far toccare i bordi */
+    padding: 0; 
     position: relative;
     overflow: hidden;
 }
 
-/* Rimuoviamo il filtro scuro sopra se vogliamo vedere bene le foto, 
-   o lo teniamo se le foto sono solo di sfondo */
-.slider-section::before {
-    display: none; /* Disattivato per dare priorità alle immagini dello slider */
-}
-
 .mySwiper {
-    width: 100%;    /* Occupa tutta la larghezza disponibile */
-    max-width: 100%; /* Rimosso il limite di 1000px */
+    width: 100%;    
+    max-width: 100%; 
     margin: 0;
     z-index: 2;
     position: relative;
@@ -153,15 +164,15 @@ body {
 
 .swiper-slide img {
     width: 100%;
-    height: 600px;    /* Aumentato per un effetto più scenografico "Hero" */
-    object-fit: cover; /* Fondamentale: riempie lo spazio senza deformare */
-    border-radius: 0;  /* Tolto il raggio se vuoi che tocchi i bordi dello schermo */
+    height: 600px;    /* Effetto scenografico "Hero" */
+    object-fit: cover; 
+    border-radius: 0;  
     box-shadow: none;
     display: block;
 }
 
 /* =========================================
-   6. NEWS SECTION & CARDS (Stile "Articoli")
+   6. NEWS SECTION & CARDS (Modello A - Griglia)
    ========================================= */
 .news-section {
     padding: 80px 20px;
@@ -245,38 +256,169 @@ body {
     text-decoration: underline;
 }
 
+/* =========================================
+   7. CARDS ROW SECTION (Modello B - Riga)
+   ========================================= */
+.cards {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
 
+.card-container {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: row; 
+    align-items: flex-start;
+    gap: 25px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.card-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(41, 98, 255, 0.1); 
+    cursor: pointer;
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    background-color: #e3f2fd; 
+    color: #1976d2;            
+    transition: all 0.3s ease;
+}
+
+.content h1 {
+    color: #0d47a1;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.card-container:hover .content h1 {
+    color: #2962ff;
+}
+
+.card-container:hover .card-icon {
+    background-color: #2962ff; 
+    color: #ffffff;
+}
+
+.card-container:hover .card-link {
+    gap: 15px; 
+}
+
+.card-meta {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 25px;
+}
+
+.card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.descriz {
+    color: #444;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.card-link {
+    color: #2962ff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.3s ease;
+}
+
+.card-link:hover {
+    text-decoration: underline;
+}
 
 /* =========================================
-   8. MEDIA QUERIES (RESPONSIVE)
+   8. FOOTER (Identico a Articoli)
    ========================================= */
-/* Aggiungi questo PRIMA della media query (stile generale hamburger) */
-.hamburger {
-    display: none;
-    cursor: pointer;
-    flex-direction: column;
-    gap: 5px;
-    width: 30px;
+.main-footer {
+    background-color: #3b1bb1;
+    color: #ffffff;
+    padding: 60px 20px 30px;
+    margin-top: 50px;
 }
 
-.hamburger span {
-    display: block;
-    width: 100%;
-    height: 3px;
-    background-color: white;
-    border-radius: 2px;
-    transition: 0.3s;
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    gap: 100px;
+    margin-bottom: 40px;
 }
 
-/* Modifica la Media Query esistente così */
+.footer-col h4 { margin-bottom: 20px; font-size: 1.1rem; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.footer-col ul li a { color: white; text-decoration: none; opacity: 0.8; }
+.footer-col ul li a:hover { opacity: 1; }
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   9. MEDIA QUERIES (RESPONSIVE UNIFICATE)
+   ========================================= */
 @media (max-width: 768px) {
+    /* Header */
+    .dark-header {
+        padding: 15px 20px;
+    }
+
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    /* Menu Filtri con Hamburger */
     .hamburger {
-        display: flex; /* Appare su mobile */
-        margin: 0 auto 10px auto; /* Centrato */
+        display: flex; 
+        margin: 0 auto 10px auto; 
     }
 
     .filter-menu ul {
-        display: none; /* Nascondiamo la lista di base */
+        display: none; 
         flex-direction: column;
         background-color: #0b3d91;
         width: 100%;
@@ -284,7 +426,6 @@ body {
         gap: 0;
     }
 
-    /* Classe che useremo con JavaScript per mostrare il menu */
     .filter-menu ul.show {
         display: flex;
     }
@@ -298,40 +439,13 @@ body {
         padding: 15px;
         justify-content: center;
         width: 100%;
+        font-size: 0.9rem;
     }
 
-    /* Animazione a X quando clicchi */
+    /* Animazione Hamburger a X */
     .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-}
-@media (max-width: 768px) {
-    
-    /* Ridimensionamento Header */
-    .dark-header {
-        padding: 15px 20px;
-    }
-
-    .header-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-
-    /* Menu Filtri: abilita lo scroll orizzontale se i link sono troppi */
-    .filter-menu ul {
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding: 0 20px;
-        gap: 20px;
-        /* Nasconde la barra di scroll su alcuni browser ma permette il trascinamento */
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .filter-menu li a {
-        white-space: nowrap; /* Evita che il testo vada a capo */
-        font-size: 0.85rem;
-    }
 
     /* Hero / Description Section */
     .description-section {
@@ -339,19 +453,19 @@ body {
     }
 
     .description-section h1 {
-        font-size: 2rem; /* Titolo più piccolo per mobile */
+        font-size: 2rem; 
     }
 
     .description-section p {
         font-size: 1rem;
     }
 
-    /* Slider: riduce l'altezza per non coprire tutto lo schermo */
+    /* Slider */
     .swiper-slide img {
         height: 350px; 
     }
 
-    /* News Grid: forza una sola colonna */
+    /* News Grid (Modello A) */
     .cards-grid {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -361,16 +475,25 @@ body {
         font-size: 1.8rem;
     }
 
-    /* Footer Responsive */
+    /* Card Row (Modello B) -> Diventa verticale su mobile */
+    .card-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .card-meta {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Footer */
     .footer-content {
         flex-direction: column;
         gap: 40px;
         text-align: center;
-        justify-content: center;
-    }
-
-    .footer-col {
-        width: 100%;
     }
 
     .footer-col ul li {
@@ -385,7 +508,7 @@ body {
     }
 }
 
-/* Ottimizzazione extra per schermi molto piccoli (es. iPhone SE) */
+/* extra per schermi molto piccoli */
 @media (max-width: 480px) {
     .description-section h1 {
         font-size: 1.7rem;
@@ -394,5 +517,120 @@ body {
     .swiper-slide img {
         height: 250px;
     }
+    
+    .content h1 {
+        font-size: 1.4rem;
+    }
 }
 
+
+
+/* =========================================
+   10. VIDEO GRID SECTION (In fila per 2)
+   ========================================= */
+.video-grid {
+    display: grid;
+    /* Forza la griglia ad avere esattamente 2 colonne uguali su schermi grandi */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 30px;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.video-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+}
+
+/* Contenitore responsive in proporzione 16:9 per l'iframe */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Ratio 16:9 */
+    height: 0;
+    background-color: #000;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.video-info {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.video-info h3 {
+    color: #0d47a1;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Icona Play stilizzata accanto al titolo */
+.play-icon-bg {
+    background-color: #e3f2fd;
+    color: #2962ff;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.video-card:hover .play-icon-bg {
+    background-color: #2962ff;
+    color: #ffffff;
+}
+
+.video-info p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Ottimizzazione mobile per la sezione Video */
+@media (max-width: 768px) {
+    .video-grid {
+        /* Sotto i 768px di larghezza passa a 1 sola colonna così i video rimangono grandi e leggibili */
+        grid-template-columns: 1fr; 
+        gap: 25px;
+        padding: 40px 20px;
+    }
+    
+    .video-info {
+        padding: 20px;
+    }
+    
+    .video-info h3 {
+        font-size: 1.15rem;
+    }
+}
