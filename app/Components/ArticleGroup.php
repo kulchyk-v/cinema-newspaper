@@ -15,12 +15,22 @@ class ArticleGroup extends Component {
     }
 
     protected function build(): void { ?>
-        <?= get_action_error() ?>
-        <h3>Articles Group</h3>
         <div>
-            <?php foreach ($this->article as $article): ?>
-                <?= new ArticleItem($article) ?>
-            <?php endforeach; ?>
+            Gruppo Articoli
+            
+            <?php if (empty($this->article)): ?>
+
+                <p>Nessun articolo trovato.</p>
+
+            <?php else: ?>
+
+                <?php foreach ($this->article as $article): ?>
+
+                    <?= new ArticleItem($article) ?>
+
+                <?php endforeach; ?>
+
+            <?php endif; ?>
         </div>
     <?php }
 }

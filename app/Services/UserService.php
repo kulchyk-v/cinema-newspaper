@@ -18,6 +18,14 @@ class UserService extends Service {
         $this->userRepository = new UserRepository();
     }
 
+    public function get_all(): array {
+        try {
+            return $this->userRepository->get_all();
+        } catch (Exception $e) {
+            throw new ServiceErrorException(t("service.user.error.get_all"));
+        }
+    }
+
     public function get_by_id(int $id): ?User {
         try {
             return $this->userRepository->get_by_id($id);

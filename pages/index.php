@@ -4,6 +4,7 @@ require_once __DIR__ . '/../camezilla/camezilla.php';
 use App\Components\Header;
 use App\Components\Navbar;
 use App\Components\ArticleItem;
+use App\Components\ArticleGroup;
 use App\Layouts\MainLayout;
 use App\Services\ArticleService;
 use Camezilla\Pages\Page;

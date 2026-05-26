@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../camezilla/camezilla.php';
 
+use App\Components\Login;
 use App\Layouts\MainLayout;
 use Camezilla\Pages\Page;
 
@@ -8,7 +9,7 @@ $page = new class extends Page {
 
     public function __construct() {
         parent::__construct(new MainLayout("Login Area Riservata - Accademia del Cinema"), function () { ?>
- 
+
 
             <div class="login-page" style="display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px;">
                 
@@ -42,7 +43,7 @@ $page = new class extends Page {
                 </div>
 
             </div>
-            
+
         <?php });
     }
 };

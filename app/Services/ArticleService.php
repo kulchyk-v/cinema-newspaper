@@ -36,6 +36,22 @@ class ArticleService extends Service {
         }
     }
 
+    public function get_recent(int $limit = 5): array {
+        try {
+            return $this->articleRepository->get_recent($limit);
+        } catch (Exception $e) {
+            throw new ServiceErrorException(t("service.article.error.get_recent"));
+        }
+    }
+
+    public function get_by_category(Category $category): array {
+        try {
+            return $this->articleRepository->get_by_category($category);
+        } catch (Exception $e) {
+            throw new ServiceErrorException(t("service.article.error.get_by_category"));
+        }
+    }
+
     public function create(Article $article) {
         $this->validate_article($article);
 

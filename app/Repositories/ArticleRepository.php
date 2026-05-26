@@ -73,6 +73,66 @@ class ArticleRepository extends Repository{
         }
     }
 
+	public function get_recent(int $limit = 5): array {
+		try {
+			$query = $this->database->prepare(
+				"SELECT * FROM articles ORDER BY date DESC LIMIT :limit"
+			);
+			$query->execute([
+				'limit' => $limit
+			]);
+
+			$articles = [];
+			while (($row = $query->fetch()) !== false) {
+				$articles[] = new Article(
+					$row['id'],
+					$row['title'],
+					$row['description'],
+					Category::from($row['category']),
+					$row['link'],
+					$row['text'],
+					PriorityLevel::from($row['priority_level']),
+					$row['author'],
+					new DateTime($row['date'])
+				);
+			}
+
+			return $articles;
+		} catch (Exception $e) {
+			throw new RepositoryErrorException("Error fetching recent articles: " . $e->getMessage());
+		}
+	}
+
+	public function get_by_category(Category $category): array {
+		try {
+			$query = $this->database->prepare(
+				"SELECT * FROM articles WHERE category = :category"
+			);
+			$query->execute([
+				'category' => $category->value
+			]);
+
+			$articles = [];
+			while (($row = $query->fetch()) !== false) {
+				$articles[] = new Article(
+					$row['id'],
+					$row['title'],
+					$row['description'],
+					Category::from($row['category']),
+					$row['link'],
+					$row['text'],
+					PriorityLevel::from($row['priority_level']),
+					$row['author'],
+					new DateTime($row['date'])
+				);
+			}
+
+			return $articles;
+		} catch (Exception $e) {
+			throw new RepositoryErrorException("Error fetching articles by category: " . $e->getMessage());
+		}
+	}
+
 	public function create(Article $article): void {
 		try {
 			$query = $this->database->prepare(

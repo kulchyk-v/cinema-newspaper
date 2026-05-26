@@ -14,6 +14,37 @@ class UserRepository extends Repository {
         parent::__construct();
     }
 
+    public function get_all(): array {
+        try {
+            $query = $this->database->prepare(
+                "SELECT * FROM users"
+            );
+            $query->execute();
+            $rows = $query->fetchAll();
+
+            $users = [];
+            foreach ($rows as $row) {
+                $role = Role::tryFrom($row['role']);
+                if ($role === null) {
+                    throw new RepositoryErrorException("Invalid role value: " . ($row['role'] ?? 'null'));
+                }
+
+                $users[] = new User(
+                    $row['id'],
+                    $row['first_name'],
+                    $row['last_name'],
+                    $row['email'],
+                    $row['password_hash'],
+                    $role
+                );
+            }
+            
+            return $users;
+        } catch (Exception $e) {
+            throw new RepositoryErrorException("Error getting users: " . $e->getMessage());
+        }
+    }
+
     public function get_by_id(int $id): ?User {
         try {
             $query = $this->database->prepare(
