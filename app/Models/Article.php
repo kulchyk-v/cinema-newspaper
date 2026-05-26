@@ -16,7 +16,8 @@ class Article {
     private ?string $author;
     private ?DateTime $date;
 
-    public function __construct(?int $id, ?string $title, ?string $description, ?Category $category, ?string $link, ?string $text, ?PriorityLevel $priority_level, ?string $author, ?DateTime $date) {
+    // Modificato il type-hint di $date per accettare anche stringhe dal form
+    public function __construct(?int $id, ?string $title, ?string $description, ?Category $category, ?string $link, ?string $text, ?PriorityLevel $priority_level, ?string $author, DateTime|string|null $date) {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
@@ -24,8 +25,14 @@ class Article {
         $this->link = $link;
         $this->text = $text;
         $this->author = $author;
-        $this->date = $date;
         $this->priority_level = $priority_level;
+
+        // Se la data arriva come stringa dal form, la convertiamo in un oggetto DateTime
+        if (is_string($date)) {
+            $this->date = new DateTime($date);
+        } else {
+            $this->date = $date;
+        }
     }
 
     public function get_id(): ?int {
@@ -64,5 +71,3 @@ class Article {
         return $this->date;
     }
 }
-
-    

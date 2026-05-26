@@ -1,0 +1,339 @@
+/* ==========================================================================
+   modify.css - Foglio di Stile Unico per il Pannello Camezilla
+   ========================================================================== */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Layout Principale */
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.tabella-wrapper {
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* Intestazioni di Pagina */
+.page-header, .page-header-main {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.page-header h1, .page-header-main h1 {
+    font-size: 2rem;
+    color: #222;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.page-header p, .page-header-main p {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Cerchio Icona Menu Principale */
+.admin-icon-box {
+    background-color: #e3f2fd;
+    color: #007bff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+}
+
+/* Box Form di Inserimento / Modifica */
+.form-aggiunta {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+}
+
+.form-aggiunta h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: #007bff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Griglie di Input */
+.input-row-utenti {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.input-row-utenti input, .custom-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+.input-row-utenti input:focus, .custom-select:focus {
+    border-color: #007bff;
+}
+
+/* Pulsanti */
+.btn-pubblica {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.btn-pubblica:hover {
+    background: #0056b3;
+}
+
+/* Struttura Contenitore delle Righe (Tabella a Griglia o Elenco Flex) */
+.tabella-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+
+/* Intestazione Colonne Utenti */
+.tabella-header-utenti {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr;
+    padding: 15px 20px;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Righe Tabella Gestione Utenti (Grid a 4 Colonne) */
+.riga-tabella-utenti {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+
+/* Righe del Menu Principale (Flex Layout Orizzontale a due blocchi) */
+.tabella-container > .riga-tabella {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+    transition: background-color 0.2s;
+}
+
+.riga-tabella:last-child, .riga-tabella-utenti:last-child {
+    border-bottom: none;
+}
+
+.riga-tabella:hover, .riga-tabella-utenti:hover {
+    background-color: #fdfdfd;
+}
+
+.sezione {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Colonne Dati Utenti */
+.col-utente {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.col-email {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* Cerchi per Iniziali Avatar */
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.av-blue { background: #007bff; }
+.av-green { background: #28a745; }
+.av-amber { background: #ffc107; color: #333; }
+.av-purple { background: #6f42c1; }
+
+.nome-completo {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Pillole dei Ruoli */
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.badge-admin { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
+.badge-editor { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+.badge-viewer { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+
+/* Contenitore Bottoni Azione */
+.col-azioni {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-modifica {
+    background: #f8f9fa;
+    color: #007bff;
+    border: 1px solid #007bff;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-modifica:hover {
+    background: #007bff;
+    color: white;
+}
+
+.btn-elimina {
+    background: #fff;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-elimina:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES - Ottimizzazione Responsive
+   ========================================================================== */
+
+/* Dispositivi Tablet e Smartphone (Sotto i 768px) */
+@media screen and (max-width: 768px) {
+    .main-container {
+        padding: 20px 10px;
+    }
+
+    .form-aggiunta {
+        padding: 18px;
+    }
+
+    /* Nascondiamo l'header della tabella utenti perché le righe diventeranno card */
+    .tabella-header-utenti {
+        display: none;
+    }
+
+    /* Trasformiamo la griglia degli utenti in un blocco verticale (stile card) */
+    .riga-tabella-utenti {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 20px;
+        align-items: flex-start;
+    }
+
+    /* Trasformiamo le righe flex del menu principale in verticale */
+    .tabella-container > .riga-tabella {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    /* Allineiamo i pulsanti azione a tutta larghezza sui dispositivi mobili */
+    .col-azioni {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 5px;
+    }
+    
+    .btn-modifica, .btn-elimina {
+        flex: 1;
+        text-align: center;
+        padding: 10px; /* Più facili da cliccare touch */
+    }
+}
+
+/* Dispositivi Mobile Stretti (Sotto i 480px) */
+@media screen and (max-width: 480px) {
+    .page-header h1, .page-header-main h1 {
+        font-size: 1.6rem;
+    }
+
+    /* Forza gli elementi del form ad andare a capo singolarmente */
+    .input-row-utenti {
+        grid-template-columns: 1fr;
+    }
+
+    .col-utente {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px; /* Leggermente più grande per il touch */
+    }
+}
