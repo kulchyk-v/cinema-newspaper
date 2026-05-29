@@ -11,7 +11,7 @@ require_user_authentication();
 $page = new class extends Page {
 
     public function __construct() {
-        parent::__construct(new MainLayout2("Gestione Video - Accademia del Cinema"), function () { 
+        parent::__construct(new MainLayout2("Gestione Rassegna Stampa - Accademia del Cinema"), function () { 
             
             // RECUPERO RUOLO UTENTE DALLA SESSIONE
             if (session_status() === PHP_SESSION_NONE) {
@@ -20,78 +20,78 @@ $page = new class extends Page {
             $current_user_role = $_SESSION['user_role'] ?? $_SESSION['role'] ?? 'viewer'; 
             $isViewer = (strtolower($current_user_role) === 'viewer');
 
-            // Estrazione diretta tramite PDO per la categoria 'video'
-            $videoList = [];
+            // Estrazione diretta tramite PDO per evitare i vincoli dell'Enum del Repository
+            $stampaList = [];
             try {
                 connect_database();
                 $camezillaDb = get_database();
                 
-                $sql = "SELECT * FROM articles WHERE LOWER(category) = 'video' ORDER BY date DESC";
+                $sql = "SELECT * FROM articles WHERE LOWER(category) = 'press_review' ORDER BY date DESC";
                 
                 $result = $camezillaDb->query($sql);
                 if (is_array($result)) {
-                    $videoList = $result;
+                    $stampaList = $result;
                 } elseif (is_object($result) && method_exists($result, 'fetchAll')) {
-                    $videoList = $result->fetchAll(PDO::FETCH_ASSOC);
+                    $stampaList = $result->fetchAll(PDO::FETCH_ASSOC);
                 }
             } catch (Exception $e) {
-                log_error("Errore estrazione video: " . $e->getMessage());
-                $videoList = []; 
+                log_error("Errore estrazione rassegna stampa: " . $e->getMessage());
+                $stampaList = []; 
             }
             ?>
+
             <div class="main-container">
-                
+
                 <div class="tabella-wrapper">
                     
                     <div class="page-header">
-                        <h1>Archivio Video</h1>
-                        <p><?= $isViewer ? "Visualizzazione dell'archivio multimediale e dei link streaming (Sola Lettura)" : "Gestisci i link dei video della scuola, i titoli e le date di pubblicazione" ?></p>
+                        <h1>Archivio Rassegna Stampa</h1>
+                        <p><?= $isViewer ? "Consultazione dell'archivio degli articoli giornalistici esterni (Sola Lettura)" : "Gestisci gli articoli di giornale, i link esterni e le pubblicazioni sulla scuola" ?></p>
                     </div>
 
                     <?php if (!$isViewer): ?>
-                        <form method="post" action="creaVideo.php" class="form-aggiunta">
-                            <h3><i class="fa-solid fa-video"></i> Aggiungi Nuovo Video</h3>
+                        <form method="post" action="creaRassegna.php" class="form-aggiunta">
+                            <h3><i class="fa-regular fa-newspaper"></i> Aggiungi Nuova Rassegna Stampa</h3>
                             <div class="input-row-utenti">
-                                <input type="text" name="video_title" placeholder="Titolo del Video / Cortometraggio" required >
-                                <input type="url" name="video_link" placeholder="URL Video (es. YouTube o Vimeo)" required>
-                                <input type="date" name="video_date" required value="<?= date('Y-m-d') ?>" >
+                                <input type="text" name="stampa_title" placeholder="Titolo dell'Articolo / Testata Giornalistica" required>
+                                <input type="url" name="stampa_link" placeholder="URL dell'Articolo (es. https://corriere.it/... )" required>
+                                <input type="date" name="stampa_date" required value="<?= date('Y-m-d') ?>">
                             </div>
                             
                             <div class="input-row-utenti">
-                                <input type="text" name="video_description" placeholder="Inserisci una breve descrizione per il video..." required>
+                                <input type="text" name="stampa_description" placeholder="Inserisci un breve riassunto o sottotitolo dell'articolo..." required>
                             </div>
 
-                            <button type="submit" class="btn-pubblica">Pubblica Video</button>
+                            <button type="submit" class="btn-pubblica">Pubblica Rassegna</button>
                         </form>
                     <?php else: ?>
                         <div style="background-color: #e2f0fe; color: #185494; padding: 12px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #b8daff; display: flex; align-items: center; gap: 10px;">
                             <i class="fa-solid fa-circle-info"></i>
-                            <span><strong>Modalità Lettura:</strong> Non disponi dei permessi per aggiungere o caricare nuovi video nell'archivio.</span>
+                            <span><strong>Modalità Lettura:</strong> Non disponi dei permessi per aggiungere pubblicazioni alla rassegna stampa.</span>
                         </div>
                     <?php endif; ?>
 
                     <div class="tabella-container">
                         <div class="tabella-header-utenti" style="grid-template-columns: 1.2fr 1.2fr 1.2fr 0.6fr 0.8fr;">
-                            <span>TITOLO VIDEO</span>
-                            <span>DESCRIZIONE</span>
-                            <span>COLLEGAMENTO STREAMING</span>
+                            <span>TESTATA / TITOLO</span>
+                            <span>BREVE DESCRIZIONE</span>
+                            <span>LINK ARTICOLO</span>
                             <span>DATA</span>
                             <span>STATUS / AZIONI</span>
                         </div>
 
-                        <?php if (!empty($videoList) && is_array($videoList)): ?>
-                            <?php foreach ($videoList as $item): ?>
+                        <?php if (!empty($stampaList) && is_array($stampaList)): ?>
+                            <?php foreach ($stampaList as $item): ?>
                                 <div class="riga-tabella-utenti" style="grid-template-columns: 1.2fr 1.2fr 1.2fr 0.6fr 0.8fr;">
                                     <div class="col-utente">
-                                        <i class="fa-regular fa-circle-play"></i>
-                                        <span class="nome-completo"><?= e($item['title'] ?? '') ?></span>
+                                        📰 <span class="nome-completo"><?= e($item['title'] ?? '') ?></span>
                                     </div>
                                     <div class="col-email">
                                         <?= e(!empty($item['description']) ? $item['description'] : 'Nessuna descrizione') ?>
                                     </div>
                                     <div class="col-email">
                                         <a href="<?= e($item['link'] ?? '') ?>" target="_blank" style="color: #007bff; text-decoration: none;">
-                                            Guarda Streaming
+                                            Vedi Link Esterno
                                         </a>
                                     </div>
                                     <div class="col-email">
@@ -99,12 +99,12 @@ $page = new class extends Page {
                                     </div>
                                     <div class="col-azioni">
                                         <?php if (!$isViewer): ?>
-                                            <a href="modificaVideo.php?id=<?= $item['id'] ?>" class="btn-modifica" style="padding: 5px 10px; font-size: 0.8rem; text-decoration:none; width: auto; background: #28a745; color: white; border-radius: 6px; font-weight: bold;">Modifica</a>
+                                            <a href="modificaRassegna.php?id=<?= $item['id'] ?>" class="btn-pubblica" style="padding: 5px 10px; font-size: 0.8rem; text-decoration:none; width: auto; background: #28a745;">Modifica</a>
                                             
-                                            <form method="post" action="<?= action('article.php', 'delete', 'tabellaAdminVideo.php') ?>" onsubmit="return confirm('Eliminare definitivamente questo video?')" style="margin: 0; display: inline;">
+                                            <form method="post" action="<?= action('article.php', 'delete', 'tabellaAdminRassegna.php') ?>" onsubmit="return confirm('Eliminare definitivamente questa rassegna stampa?')" style="margin: 0; display: inline;">
                                                 <input type="hidden" name="id" value="<?= $item['id'] ?>">
                                                 <button type="submit" class="btn-pubblica" style="padding: 5px 10px; font-size: 0.8rem; width: auto; background: #dc3545;">
-                                                    <i class="fa-solid fa-trash"></i>
+                                                    Elimina
                                                 </button>
                                             </form>
                                         <?php else: ?>
@@ -117,7 +117,7 @@ $page = new class extends Page {
                             <?php endforeach; ?>
                         <?php else: ?>
                             <div class="riga-tabella-utenti" style="grid-template-columns: 1fr; justify-content: center;">
-                                <span class="col-email"><i class="fa-solid fa-video-slash"></i> Nessun video trovato nel database.</span>
+                                <span class="col-email">Nessuna rassegna stampa trovata nel database.</span>
                             </div>
                         <?php endif; ?>
                     </div>

@@ -3,113 +3,204 @@ require_once __DIR__ . '/../camezilla/camezilla.php';
 
 use App\Layouts\MainLayout2;
 use Camezilla\Pages\Page;
+use App\Services\ArticleService;
 
-// Forza il login dell'amministratore
 require_user_authentication();
 
+$cancelPage = 'tabellaAdminArticoli.php';
+
+// ==================================================================
+// 1. LOGICA DI SALVATAGGIO IN POST (Lanciata premendo Salva Modifiche)
+// ==================================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type']) && $_POST['action_type'] === 'salva_articolo_modificato') {
+    $id = intval($_POST['id'] ?? 0);
+    $title = $_POST['articolo_title'] ?? '';
+    $description = $_POST['articolo_description'] ?? '';
+    $text = $_POST['articolo_text'] ?? '';
+    $date = $_POST['articolo_date'] ?? '';
+
+    if ($id > 0 && !empty($title)) {
+        try {
+            connect_database();
+            $camezillaDb = get_database();
+            $pdo = method_exists($camezillaDb, 'get_pdo') ? $camezillaDb->get_pdo() : $camezillaDb;
+
+            // BLOCCO DI SICUREZZA IN POST: Impedisce il salvataggio se l'articolo sul DB è HIGH
+            if ($pdo instanceof PDO) {
+                $checkStmt = $pdo->prepare("SELECT priority_level FROM articles WHERE id = ? LIMIT 1");
+                $checkStmt->execute([$id]);
+                $currentPriority = $checkStmt->fetchColumn();
+                
+                // Controllo flessibile nel caso in cui sul DB sia memorizzato come stringa
+                if ($currentPriority && strtolower($currentPriority) === 'high') {
+                    header("Location: " . $cancelPage);
+                    exit;
+                }
+            }
+
+            $escaped_title = addslashes($title);
+            $escaped_desc = addslashes($description);
+            $escaped_text = addslashes($text);
+            $escaped_date = addslashes($date);
+
+            // Aggiorna mantenendo i filtri di categoria e priorità originari di sicurezza
+            $sql = "UPDATE articles 
+                    SET title = '$escaped_title', 
+                        description = '$escaped_desc', 
+                        text = '$escaped_text', 
+                        date = '$escaped_date' 
+                    WHERE id = $id AND category = 'meeting' AND priority_level = 'low'";
+
+            $camezillaDb->query($sql);
+        } catch (Exception $e) {
+            log_error("Errore esecuzione modifica_articolo SQL: " . $e->getMessage());
+        }
+    }
+
+    header("Location: " . $cancelPage);
+    exit;
+}
+
+// ==================================================================
+// 2. RENDERING GRAFICO IN GET (Lanciata cliccando sul bottone Modifica)
+// ==================================================================
 $page = new class extends Page {
 
-    public function __construct() {
-        parent::__construct(new MainLayout2("Modifica Articolo - Accademia del Cinema"), function () { 
-            
-            $idArticolo = isset($_GET['id']) ? (int)$_GET['id'] : null;
-            $articolo = null;
+    public function __construct()
+    {
+        global $cancelPage;
 
-            if (!$idArticolo || $idArticolo <= 0) {
-                echo "<div style='padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:4px; margin:20px;'>
-                        <i class='fa-solid fa-exclamation-triangle'></i> <strong>Errore:</strong> ID Articolo mancante o non valido nell'URL.
-                      </div>";
+        parent::__construct(new MainLayout2("Modifica Articolo - Accademia del Cinema"), function () use ($cancelPage) {
+
+            $articoloObject = null;
+            $id = intval($_GET['id'] ?? 0);
+
+            if ($id <= 0) {
+                echo "<div class='main-container'><p style='color:red; font-weight:bold; padding:20px;'>ID articolo non valido.</p></div>";
                 return;
             }
 
-            // ==================================================================
-            // ESTRAZIONE SICURA DELL'ARTICOLO (STILE GESTIONE UTENTI)
-            // ==================================================================
             try {
                 connect_database();
-                $camezillaDb = get_database();
-                
-                // Estraiamo l'istanza PDO interna o usiamo il wrapper custom
-                $pdo = method_exists($camezillaDb, 'get_pdo') ? $camezillaDb->get_pdo() : $camezillaDb;
-
-                if ($pdo instanceof PDO) {
-                    // Estratto tramite PDO nativo con Named Parameter sicuro
-                    $stmt = $pdo->prepare("SELECT * FROM articles WHERE id = :id LIMIT 1");
-                    $stmt->execute([':id' => $idArticolo]);
-                    $articolo = $stmt->fetch(PDO::FETCH_ASSOC);
-                } else if (method_exists($camezillaDb, 'query')) {
-                    // Fallback sul metodo query del framework Camezilla
-                    $result = $camezillaDb->query("SELECT * FROM articles WHERE id = $idArticolo LIMIT 1");
-                    if (is_array($result) && isset($result[0])) {
-                        $articolo = $result[0];
-                    } elseif (is_object($result) && method_exists($result, 'fetch')) {
-                        $articolo = $result->fetch(PDO::FETCH_ASSOC);
-                    }
-                }
+                $articleService = new ArticleService();
+                $articoloObject = $articleService->get_by_id($id);
             } catch (Exception $e) {
-                log_error("Errore recupero articolo ID $idArticolo: " . $e->getMessage());
+                log_error("Errore lettura tramite ArticleService in modifica_articolo: " . $e->getMessage());
             }
 
-            // Se dopo tutti i tentativi l'articolo non c'è, mostriamo un errore pulito
-            if (!$articolo) {
-                echo "<div style='padding:20px; color:#721c24; background:#f8d7da; border:1px solid #f5c6cb; border-radius:4px; margin:20px;'>
-                        <i class='fa-solid fa-search'></i> <strong>Errore di Sincronizzazione:</strong> L'articolo con ID <strong>" . e($idArticolo) . "</strong> non è stato trovato nel database. Verificare la tabella <code>articles</code>.
-                      </div>";
+            if (!$articoloObject) {
+                echo "<div class='main-container' style='padding:20px;'><p style='color:red; font-weight:bold;'>Record non trovato nel database (ID: " . $id . ").</p></div>";
                 return;
+            }
+
+            // Estrazione sicura dei dati testuali e delle proprietà dell'oggetto
+            $title = method_exists($articoloObject, 'get_title') ? $articoloObject->get_title() : '';
+            $description = method_exists($articoloObject, 'get_description') ? $articoloObject->get_description() : '';
+            $text = method_exists($articoloObject, 'get_text') ? $articoloObject->get_text() : '';
+            
+            // ESTRAZIONE SICURA DALL'OGGETTO ENUM PriorityLevel
+            $priority = 'low';
+            if (method_exists($articoloObject, 'get_priority_level')) {
+                $priorityObj = $articoloObject->get_priority_level();
+                if (is_object($priorityObj)) {
+                    // Se è un Enum, estraiamo la stringa tramite ->value o ->name
+                    $priority = $priorityObj->value ?? $priorityObj->name ?? 'low';
+                } else {
+                    $priority = $priorityObj;
+                }
+            }
+            $isHighPriority = (strtolower((string)$priority) === 'high');
+
+            $date_formatted = '';
+            if (method_exists($articoloObject, 'get_date') && $articoloObject->get_date() !== null) {
+                $dateObj = $articoloObject->get_date();
+                $date_formatted = ($dateObj instanceof DateTime) ? $dateObj->format('Y-m-d') : $dateObj;
             }
             ?>
 
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <link rel="stylesheet" href="modify.css"> 
-
             <div class="main-container">
                 <div class="tabella-wrapper">
-                    
-                    <div class="page-header">
-                        <h1>Modifica Articolo #<?= e($articolo['id']) ?></h1>
-                        <p>Aggiorna le informazioni del contenuto selezionato per la Home</p>
+
+                    <div class="back-button-wrapper" style="margin-bottom: 20px; text-align: left;">
                     </div>
 
-                    <form method="post" action="<?= action('article.php', 'update', 'tabellaAdminHome.php') ?>" class="form-aggiunta">
-                        <input type="hidden" name="id" value="<?= e($articolo['id']) ?>">
+                    <div class="page-header">
+                        <h1>Modifica Articolo</h1>
+                        <p>Aggiorna il testo e la data dell'articolo selezionato</p>
+                    </div>
 
-                        <div class="input-row-utenti">
-                            <div style="flex:2;">
-                                <label style="font-weight:bold; display:block; margin-bottom:5px;">Titolo</label>
-                                <input type="text" name="title" required value="<?= e($articolo['title']) ?>">
+                    <?php if ($isHighPriority): ?>
+                        <div class="error-message" style="
+                            background-color: #f8d7da; 
+                            color: #721c24; 
+                            padding: 15px; 
+                            margin-bottom: 25px; 
+                            border-radius: 6px; 
+                            border: 1px solid #f5c6cb; 
+                            display: flex; 
+                            align-items: center; 
+                            gap: 12px;
+                            font-size: 0.95rem;
+                        ">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.3rem;"></i>
+                            <span>
+                                <strong>Impossibile salvare le modifiche:</strong> Questo articolo è impostato come contenuto di <strong>Alto Livello (High)</strong> e non può essere sovrascritto o modificato da questa sezione.
+                            </span>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="post" action="modifica_articolo.php" class="form-aggiunta">
+                        <h3><i class="fa-solid fa-pen-to-square"></i> Modifica Articolo #<?= $id ?></h3>
+
+                        <input type="hidden" name="action_type" value="salva_articolo_modificato">
+                        <input type="hidden" name="id" value="<?= $id ?>">
+
+                        <div class="input-row-utenti" style="display: flex; flex-direction: column; gap: 15px;">
+
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                <label style="font-size:11px; color:#666; font-weight:700;">TITOLO ARTICOLO</label>
+                                <input type="text" name="articolo_title" value="<?= e($title) ?>" required <?= $isHighPriority ? 'disabled' : '' ?>
+                                    style="width: 100%; padding: 10px; box-sizing: border-box; <?= $isHighPriority ? 'background-color:#e9ecef; cursor:not-allowed;' : '' ?>">
                             </div>
-                            <div style="flex:2;">
-                                <label style="font-weight:bold; display:block; margin-bottom:5px;">Sottotitolo / Sommario</label>
-                                <input type="text" name="description" required value="<?= e($articolo['description']) ?>">
+
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                <label style="font-size:11px; color:#666; font-weight:700;">DESCRIZIONE BREVE</label>
+                                <input type="text" name="articolo_description" value="<?= e($description) ?>" required <?= $isHighPriority ? 'disabled' : '' ?>
+                                    style="width: 100%; padding: 10px; box-sizing: border-box; <?= $isHighPriority ? 'background-color:#e9ecef; cursor:not-allowed;' : '' ?>">
                             </div>
-                            <div style="flex:1;">
-                                <label style="font-weight:bold; display:block; margin-bottom:5px;">Data Pubblicazione</label>
-                                <input type="date" name="date" required value="<?= e($articolo['date']) ?>">
+
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                <label style="font-size:11px; color:#666; font-weight:700;">TESTO DELL'ARTICOLO</label>
+                                <textarea name="articolo_text" rows="8" required <?= $isHighPriority ? 'disabled' : '' ?>
+                                    style="width: 100%; padding: 10px; box-sizing: border-box; font-family: inherit; <?= $isHighPriority ? 'background-color:#e9ecef; cursor:not-allowed;' : '' ?>"><?= e($text) ?></textarea>
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:5px; width: 220px;">
+                                <label style="font-size:11px; color:#666; font-weight:700;">DATA PUBBLICAZIONE</label>
+                                <input type="date" name="articolo_date" value="<?= e($date_formatted) ?>" required <?= $isHighPriority ? 'disabled' : '' ?>
+                                    style="padding: 10px; <?= $isHighPriority ? 'background-color:#e9ecef; cursor:not-allowed;' : '' ?>">
                             </div>
                         </div>
 
-                        <div style="margin-top: 15px;">
-                            <label style="font-weight:bold; display:block; margin-bottom:5px;">Corpo del Testo dell'Articolo</label>
-                            <textarea name="text" rows="6" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" required><?= e($articolo['text']) ?></textarea>
-                        </div>
-
-                        <input type="hidden" name="category" value="<?= e($articolo['category']) ?>">
-                        <input type="hidden" name="priority_level" value="<?= e($articolo['priority_level']) ?>">
-                        <input type="hidden" name="author" value="<?= e($articolo['author']) ?>">
-                        <input type="hidden" name="image" value=" "> <input type="hidden" name="views_number" value="<?= e($articolo['views_number']) ?>">
-                        
-                        <input type="hidden" name="link" value="<?= !empty($articolo['link']) ? e($articolo['link']) : 'https://localhost' ?>">
-
-                        <div style="margin-top: 20px; display: flex; gap: 10px;">
-                            <button type="submit" class="btn-pubblica" style="background:#28a745;">Salva Modifiche</button>
-                            <a href="tabellaAdminHome.php" class="btn-modifica" style="text-align:center; text-decoration:none; line-height:38px; background:#6c757d; color:white; padding: 0 20px; border-radius:4px;">Annulla</a>
+                        <div style="margin-top: 25px; display: flex; gap: 10px;">
+                            <?php if (!$isHighPriority): ?>
+                                <button type="submit" class="btn-pubblica"
+                                    style="flex:2; background-color: #007bff; color:white; border:none; padding:12px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                                    Salva Modifiche
+                                </button>
+                            <?php endif; ?>
+                            
+                            <a href="<?= $cancelPage ?>" class="btn-modifica"
+                                style="flex:1; text-align:center; text-decoration:none; line-height:38px; background-color: #6c757d; color: white; border-radius: 4px; font-weight: bold;">
+                                <?= $isHighPriority ? 'Torna Indietro' : 'Annulla' ?>
+                            </a>
                         </div>
                     </form>
 
                 </div>
             </div>
-            
-        <?php 
+
+        <?php
         });
     }
 };

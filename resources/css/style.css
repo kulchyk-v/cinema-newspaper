@@ -1,5 +1,5 @@
 /* =========================================
-   1. RESET E BASE
+   1. RESET E BASE (Migliorato per Camezilla)
    ========================================= */
 * {
     margin: 0;
@@ -11,6 +11,13 @@
 body {
     background-color: #f8f9fa; /* Sfondo chiaro come nella pagina articoli */
     color: #333;
+    overflow-x: hidden; /* Impedisce lo scrolling orizzontale in tutta la pagina */
+}
+
+/* FIX GLOBALE ANTI-SBALLAMENTO: Forza il ritorno a capo di qualunque stringa orfana o link infinito */
+h1, h2, h3, h4, h5, h6, p, span, div, a {
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
 }
 
 /* =========================================
@@ -523,8 +530,6 @@ body {
     }
 }
 
-
-
 /* =========================================
    10. VIDEO GRID SECTION (In fila per 2)
    ========================================= */
@@ -620,7 +625,6 @@ body {
 /* Ottimizzazione mobile per la sezione Video */
 @media (max-width: 768px) {
     .video-grid {
-        /* Sotto i 768px di larghezza passa a 1 sola colonna così i video rimangono grandi e leggibili */
         grid-template-columns: 1fr; 
         gap: 25px;
         padding: 40px 20px;
@@ -635,109 +639,414 @@ body {
     }
 }
 
+/* ==========================================================================
+   11. INTEGRAZIONE PAGINA: TUTTI GLI ARTICOLI
+   ========================================================================== */
 
-
-
-
-/* Il riquadro bianco centrale */
-.login-container {
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.login-header h2 {
-    color: #0046a1; 
-    margin-bottom: 10px;
-}
-
-.login-header p {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Struttura del Form */
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
+/* Link "Torna alla Home" posizionato sopra il titolo */
+.description-section a {
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-flex;
+    align-items: center;
     gap: 8px;
 }
 
-.form-group label {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.95rem;
+.description-section a:hover {
+    color: #ffffff !important;
+    transform: translateX(-3px);
 }
 
-.form-group input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+/* Card specifica per la griglia di "Tutti gli Articoli" */
+.news-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* FIX ANCHOR: Mantiene la card dentro la griglia anche con testi sballati */
+    max-width: 100% !important;
+    overflow: hidden !important;
 }
 
-.form-group input:focus {
-    border-color: #0080ef; /* Diventa viola quando ci scrivi dentro */
-    outline: none;
+.news-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
 }
 
-/* Bottone di accesso */
-.btn-login {
-    background-color: #005de8;
-    color: #fff;
-    border: none;
-    padding: 15px;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-}
-
-.btn-login:hover {
-    background-color: #6390c8;
-}
-
-/* Grafica per l'errore PHP */
-.error-message {
-    background-color: #ffebee;
-    color: #c62828;
-    padding: 10px;
-    border-radius: 5px;
+/* Righe Meta info (Data e Autore) */
+.news-card div > div:first-child {
+    display: flex;
+    gap: 20px;
     font-size: 0.9rem;
-    text-align: center;
-    border: 1px solid #ef9a9a;
-}
-
-/* Link per tornare indietro */
-.login-footer {
-    text-align: center;
-    margin-top: 25px;
-}
-
-.login-footer a {
     color: #666;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s;
+    margin-bottom: 15px;
 }
 
-.login-footer a:hover {
-    color: #0074f0;
+.news-card div > div:first-child span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.news-card div > div:first-child i {
+    color: #2962ff;
+}
+
+/* Titolo dell'articolo */
+.news-card h3 {
+    color: #0d47a1;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+}
+
+.news-card:hover h3 {
+    color: #2962ff;
+}
+
+/* Paragrafo di descrizione */
+.news-card p {
+    color: #444;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    
+    /* FIX: Unione sicura tra troncamento a 3 righe e ritorno a capo forzato */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+}
+
+/* Pulsante/Link "Leggi notizia" */
+.news-card a[href^="notizia.php"] {
+    color: #2962ff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s ease;
+}
+
+.news-card a[href^="notizia.php"]:hover {
+    text-decoration: underline;
+}
+
+.news-card:hover a[href^="notizia.php"] {
+    gap: 15px;
+}
+
+/* Ottimizzazione mobile dedicata */
+@media (max-width: 768px) {
+    .news-card {
+        padding: 20px;
+    }
+
+    .news-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .news-card div > div:first-child {
+        gap: 15px;
+        font-size: 0.85rem;
+    }
+}
+/* ==========================================================================
+   11. PAGINA DETTAGLIO NOTIZIA (NOTIZIA.PHP) - COORDINATO CON STYLE.CSS
+   ========================================================================== */
+
+/* Layout Principale a due colonne corazzato contro i testi lunghi */
+.article-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px; /* Uniformato alle card di style.css */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Stessa ombra delle card */
+    border: 1px solid #eee;
+    text-align: left;
+    
+    /* Impedisce alle colonne della griglia di allargarsi oltre il dovuto */
+    min-width: 0;
+    width: 100%;
+}
+
+/* Link di ritorno sopra il titolo */
+.back-link-container {
+    max-width: 1200px;
+    margin: 0 auto 20px auto;
+    text-align: left;
+}
+
+.back-to-all {
+    color: #6f95fd; /* Blu primario da style.css */
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.back-to-all:hover {
+    color: #0d47a1;
+    transform: translateX(-3px);
+}
+
+/* Meta informazioni dell'articolo (Autore, Categoria, Data) */
+.article-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.article-header-meta .date {
+    color: #666; /* Uniformato a style.css */
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Badge dinamici delle categorie ad angoli arrotondati (Stile Pill) */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px; /* Pillole moderne */
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.blue  { background-color: #0d47a1; }
+.badge.red   { background-color: #dc3545; }
+.badge.green { background-color: #28a745; }
+
+/* Tipografia dell'articolo allineata ai font sans-serif di sistema */
+.single-title {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: #0d47a1; /* Colore dell'header delle news */
+    margin: 0 0 20px 0;
+    font-weight: 700;
+}
+
+/* Sommario/Sottotitolo */
+.single-summary {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.15rem;
+    color: #555;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    display: block;
+}
+
+/* Contenitore principale del testo dell'articolo */
+.single-content {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #444; /* Colore testo paragrafi da style.css */
+}
+
+.single-content p {
+    margin-bottom: 20px;
+}
+
+/* Immagine di Copertina responsive */
+.single-image {
+    margin-bottom: 30px;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.single-image img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    max-height: 500px;
+}
+
+/* Barra di condivisione Social */
+.share-bar {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-weight: bold;
+    color: #666;
+}
+
+.share-bar a {
+    color: #555555;
+    font-size: 1.2rem;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.share-bar a:hover {
+    color: #2962ff;
+    transform: scale(1.1);
+}
+
+/* --- SIDEBAR AGGIORNAMENTI --- */
+.sidebar-title {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.3rem;
+    color: #0d47a1;
+    font-weight: 700;
+    border-bottom: 3px solid #0d47a1;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+
+.sidebar-card {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+    background: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-card:hover {
+    transform: translateX(4px);
+}
+
+.sidebar-card .rank {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #dee2e6;
+    line-height: 1;
+    min-width: 25px;
+}
+
+.sidebar-card h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.sidebar-card h4 a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.sidebar-card h4 a:hover {
+    color: #2962ff;
+}
+
+.no-data {
+    color: #888888;
+    font-size: 0.9rem;
+    padding: 10px;
+}
+
+/* --- STATI DI ERRORE E FALLBACK DB --- */
+.db-error-alert {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    margin: 20px;
+    border-radius: 12px;
+    border: 1px solid #ffeeba;
+    font-weight: 600;
+}
+
+.error-wrapper {
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.error-card {
+    max-width: 600px;
+    width: 100%;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    border: 1px solid #eee;
+}
+
+.error-icon {
+    font-size: 54px;
+    color: #dc3545;
+    margin-bottom: 20px;
+}
+
+.error-card h2 {
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.error-card p {
+    color: #666666;
+    margin-bottom: 30px;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+.btn-back {
+    background: #0d47a1;
+    color: #ffffff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: inline-block;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-back:hover {
+    background: #0b3d91;
+    transform: translateY(-2px);
+}
+
+/* --- RESPONSIVE DETTAGLIO --- */
+@media (max-width: 900px) {
+    .article-layout {
+        grid-template-columns: 1fr; /* Switch a colonna singola su tablet/mobile */
+        padding: 20px;
+        gap: 30px;
+    }
+    
+    .single-title {
+        font-size: 2rem;
+    }
+    
+    .article-header-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 }

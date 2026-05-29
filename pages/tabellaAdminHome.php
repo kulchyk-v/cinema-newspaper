@@ -3,140 +3,138 @@ require_once __DIR__ . '/../camezilla/camezilla.php';
 
 use App\Layouts\MainLayout2;
 use Camezilla\Pages\Page;
+use App\Components\BackButton;
 
 // Forza l'autenticazione dell'utente amministratore
 require_user_authentication();
 
 $page = new class extends Page {
 
-    public function __construct() {
-        parent::__construct(new MainLayout2("Gestione Home - Accademia del Cinema"), function () { 
-            
-            // ==================================================================
-            // ESTRAZIONE NOTIZIE DINAMICA COMPATIBILE CON CAMEZILLA
-            // ==================================================================
-            $notizie = [];
+    public function __construct()
+    {
+        parent::__construct(new MainLayout2("Gestione Home - Accademia del Cinema"), function () {
+
+            // RECUPERO RUOLO UTENTE DALLA SESSIONE
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $current_user_role = $_SESSION['user_role'] ?? $_SESSION['role'] ?? 'viewer'; 
+            $isViewer = (strtolower($current_user_role) === 'viewer');
+
+            // Estrazione mirata per gli incontri in evidenza (Solo category 'meeting' e livelli high/medium)
+            $homeList = [];
             try {
                 connect_database();
                 $camezillaDb = get_database();
-                
-                // Estrazione istanza PDO o fallback sul wrapper del framework
-                $pdo = method_exists($camezillaDb, 'get_pdo') ? $camezillaDb->get_pdo() : $camezillaDb;
-                
-                if ($pdo instanceof PDO) {
-                    $stmt = $pdo->query("SELECT * FROM articles WHERE category = 'meeting' ORDER BY date DESC, id DESC");
-                    $notizie = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                } else if (method_exists($camezillaDb, 'query')) {
-                    $result = $camezillaDb->query("SELECT * FROM articles WHERE category = 'meeting' ORDER BY date DESC, id DESC");
-                    if (is_array($result)) {
-                        $notizie = $result;
-                    } elseif (is_object($result) && method_exists($result, 'fetchAll')) {
-                        $notizie = $result->fetchAll(PDO::FETCH_ASSOC);
-                    }
+
+                $sql = "SELECT * FROM articles WHERE LOWER(category) = 'meeting' AND LOWER(priority_level) IN ('high', 'medium') ORDER BY date DESC";
+
+                $result = $camezillaDb->query($sql);
+                if (is_array($result)) {
+                    $homeList = $result;
+                } elseif (is_object($result) && method_exists($result, 'fetchAll')) {
+                    $homeList = $result->fetchAll(PDO::FETCH_ASSOC);
                 }
             } catch (Exception $e) {
-                log_error("Errore estrazione notizie home: " . $e->getMessage());
-                $notizie = []; 
+                log_error("Errore estrazione articoli home: " . $e->getMessage());
+                $homeList = [];
             }
             ?>
 
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <link rel="stylesheet" href="modify.css"> 
-
             <div class="main-container">
                 <div class="tabella-wrapper">
-                    
+
                     <div class="page-header">
-                        <h1>Home</h1>
-                        <p>Aggiungi e gestisci Home della testata</p>
+                        <h1>Incontri in Evidenza (Home)</h1>
+                        <p><?= $isViewer ? "Visualizzazione degli elementi in evidenza della Home Page (Sola Lettura)" : "Gestisci gli articoli di livello Alto o Medio visibili nella Home Page pubblica" ?></p>
                     </div>
 
-                    <?php if (get_action_error()): ?>
-                        <div class="error-message" style="background-color: #f8d7da; color: #721c24; padding: 12px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #f5c6cb;">
-                            <?= e(get_action_error(true)) ?>
+                    <?php if (!$isViewer): ?>
+                        <form method="post" action="creaHome.php" class="form-aggiunta">
+                            <h3><i class="fa-solid fa-star"></i> Aggiungi Nuovo Incontro in Evidenza</h3>
+                            <div class="input-row-utenti">
+                                <input type="text" name="title" placeholder="Titolo dell'Incontro" required>
+                                <input type="text" name="author" placeholder="Autore / Relatore" required>
+                                <input type="date" name="date" required value="<?= date('Y-m-d') ?>">
+                            </div>
+
+                            <div class="input-row-utenti">
+                                <input type="text" name="description" placeholder="Inserisci il sottotitolo o una breve descrizione..."
+                                    required>
+                            </div>
+                            <div class="input-row-utenti">
+                                <textarea name="text" placeholder="Testo completo dell'articolo..." rows="4" class="custom-select"
+                                    style="height: auto; max-width: 100%; font-family: inherit; resize: vertical; white-space: pre-wrap; word-break: break-word;"
+                                    required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-pubblica">Pubblica in Home</button>
+                        </form>
+                    <?php else: ?>
+                        <div style="background-color: #e2f0fe; color: #185494; padding: 12px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #b8daff; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span><strong>Modalità Lettura:</strong> Non disponi dei permessi per aggiungere nuovi incontri in evidenza.</span>
                         </div>
                     <?php endif; ?>
 
-                    <?php if (get_action_success()): ?>
-                        <div class="success-message" style="background-color: #d4edda; color: #155724; padding: 12px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #c3e6cb;">
-                            <?= e(get_action_success(true)) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <form method="post" action="<?= action('article.php', 'create', 'tabellaAdminHome.php') ?>" class="form-aggiunta">
-                        <h3><i class="fa-solid fa-plus-circle"></i> Nuova Notizia</h3>
-                        
-                        <div class="input-row-utenti">
-                            <input type="text" name="title" placeholder="Titolo" required>
-                            <input type="text" name="description" placeholder="Sottotitolo / Sommario" required>
-                            <input type="date" name="date" required value="<?= date('Y-m-d') ?>">
+                    <div class="tabella-container">
+                        <div class="tabella-header-utenti" style="grid-template-columns: 1.5fr 1.5fr 0.6fr 0.6fr 0.8fr;">
+                            <span>TITOLO INCONTRO</span>
+                            <span>DESCRIZIONE</span>
+                            <span>LIVELLO</span>
+                            <span>DATA</span>
+                            <span>STATUS / AZIONI</span>
                         </div>
 
-                        <div style="margin-top: 15px;">
-                            <textarea name="text" placeholder="Scrivi qui il corpo del testo completo..." rows="4" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" required></textarea>
-                        </div>
-
-                        <input type="hidden" name="category" value="meeting">
-                        <input type="hidden" name="priority_level" value="high">
-                        <input type="hidden" name="author" value="Admin">
-                        <input type="hidden" name="image" value=" "> <input type="hidden" name="views_number" value="0">
-                        <input type="hidden" name="link" value="https://localhost"> <button type="submit" class="btn-pubblica" style="margin-top: 15px;">Pubblica Articolo</button>
-                    </form>
-
-                    <div class="tabella-container" style="margin-top: 30px;">
-                        <div class="tabella-header-utenti">
-                            <span>DATA PUBBLICAZIONE</span>
-                            <span style="flex: 2;">DETTAGLI ARTICOLO</span>
-                            <span>AZIONI</span>
-                        </div>
-
-                        <?php if (!empty($notizie) && is_array($notizie)): ?>
-                            <?php foreach ($notizie as $notizia): ?>
-                                <?php 
-                                    $id          = $notizia['id'] ?? 0;
-                                    $title       = $notizia['title'] ?? '';
-                                    $description = $notizia['description'] ?? '';
-                                    $dateValue   = $notizia['date'] ?? '';
-                                ?>
-                                <div class="riga-tabella-utenti">
-                                    
-                                    <div class="col-email" style="font-weight: bold; color: #444;">
-                                        <?= !empty($dateValue) ? date('d/m/Y', strtotime($dateValue)) : '' ?>
+                        <?php if (!empty($homeList) && is_array($homeList)): ?>
+                            <?php foreach ($homeList as $item):
+                                $lvl = strtolower($item['priority_level'] ?? 'high'); ?>
+                                <div class="riga-tabella-utenti" style="grid-template-columns: 1.5fr 1.5fr 0.6fr 0.6fr 0.8fr;">
+                                    <div class="col-utente">
+                                        <i class="fa-solid fa-star" style="color: #ffc107;"></i>
+                                        <span class="nome-completo"><?= e($item['title'] ?? '') ?></span>
                                     </div>
-                                    
-                                    <div class="col-utente" style="flex: 2; display: flex; flex-direction: column; gap: 4px;">
-                                        <span class="nome-completo" style="color: #007bff; font-weight: 600;">
-                                            <?= e($title) ?>
-                                        </span>
-                                        <p style="margin: 0; color: #666; font-size: 0.9rem;">
-                                            <?= e($description) ?>
-                                        </p>
+                                    <div class="col-email">
+                                        <?= e($item['description'] ?? '') ?>
                                     </div>
-                                    
-                                    <div class="col-azioni" style="display: flex; gap: 15px; align-items: center;">
-                                        <a href="modifica_articolo.php?id=<?= $id ?>" class="btn-modifica" style="text-decoration:none;">Modifica</a>
-                                        
-                                        <form method="post" action="<?= action('article.php', 'delete', 'tabellaAdminHome.php') ?>" onsubmit="return confirm('Vuoi davvero eliminare l\'articolo: <?= e($title) ?>?')" style="margin: 0; padding: 0; display: inline;">
-                                            <input type="hidden" name="id" value="<?= $id ?>">
-                                            <button type="submit" class="btn-elimina" style="border: none; background: none; padding: 0; cursor: pointer;">
-                                                <i class="fa-solid fa-trash" style="color: #dc3545; font-size: 16px;"></i>
-                                            </button>
-                                        </form>
+                                    <div>
+                                        <span class="badge badge-<?= $lvl == 'high' ? 'admin' : 'editor' ?>"><?= e($lvl) ?></span>
                                     </div>
+                                    <div class="col-email">
+                                        <?= !empty($item['date']) ? date('d/m/Y', strtotime($item['date'])) : '' ?>
+                                    </div>
+                                    <div class="col-azioni">
+                                        <?php if (!$isViewer): ?>
+                                            <a href="modificaHome.php?id=<?= $item['id'] ?>" class="btn-pubblica"
+                                                style="padding: 5px 10px; font-size: 0.8rem; text-decoration:none; width: auto; background: #28a745;">Modifica</a>
 
+                                            <form method="post" action="<?= action('article.php', 'delete', 'tabellaAdminHome.php') ?>"
+                                                onsubmit="return confirm('Rimuovere questo articolo dalla Home?')" style="margin: 0; display: inline;">
+                                                <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                                                <button type="submit" class="btn-pubblica"
+                                                    style="padding: 5px 10px; font-size: 0.8rem; width: auto; background: #dc3545;">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <span style="color: #6c757d; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px;">
+                                                <i class="fa-solid fa-lock" style="color: #ffc107;"></i> Sola lettura
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <div class="riga-tabella-utenti" style="justify-content: center; padding: 25px; color: #888;">
-                                <span><i class="fa-solid fa-info-circle"></i> Nessun articolo inserito per la Home page.</span>
+                            <div class="riga-tabella-utenti" style="grid-template-columns: 1fr; justify-content: center;">
+                                <span class="col-email">Nessun incontro in evidenza trovato nel database.</span>
                             </div>
                         <?php endif; ?>
-                        
                     </div>
+
                 </div>
             </div>
-            
-        <?php 
+
+        <?php
         });
     }
 };

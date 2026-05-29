@@ -129,14 +129,13 @@ class UserRepository extends Repository {
     public function update(User $user) {
         try {
             $query = $this->database->prepare(
-                "UPDATE users SET first_name = :first_name, last_name = :last_name, email = :email, password_hash = :password_hash, role = :role WHERE id = :id"
+                "UPDATE users SET first_name = :first_name, last_name = :last_name, email = :email, role = :role WHERE id = :id"
             );
             $query->execute([
                 'id' => $user->get_id(),
                 'first_name' => $user->get_first_name(),
                 'last_name' => $user->get_last_name(),
                 'email' => $user->get_email(),
-                'password_hash' => $user->get_password_hash(),
                 'role' => $user->get_role()->value
             ]);
         } catch (Exception $e) {

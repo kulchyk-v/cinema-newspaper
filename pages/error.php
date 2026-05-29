@@ -7,7 +7,7 @@ use Camezilla\Pages\Page;
 $page = new class extends Page {
 
     public function __construct() {
-        $viewService = new ViewService();
+        $viewService = new viewService();
         $viewService->increase();
         
         parent::__construct(new MainLayout("Error"), function () { ?>

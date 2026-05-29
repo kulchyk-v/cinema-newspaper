@@ -2,6 +2,7 @@
 
 namespace App\Layouts;
 
+use App\Components\Header;
 use Camezilla\Layouts\Layout;
 use App\Components\Footer; 
 
@@ -24,15 +25,14 @@ class MainLayout extends Layout
             
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-             <link rel="stylesheet" href="<?= resource('css/modify.css'); ?>"> 
             <script src="<?= resource('js/Js.js'); ?>"></script>
             
             <link rel="stylesheet" href="<?= resource('css/style.css'); ?>"> 
+            <link rel="stylesheet" href="<?= resource('css/login.css'); ?>">  
             <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         </head>
         <body>
-
 
             <main>
                 <?php $this->render_content(); ?>

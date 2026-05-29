@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Layouts;
-
 use Camezilla\Layouts\Layout;
+use App\Components\BackButton; 
 use App\Components\Footer; 
 
 class MainLayout2 extends Layout
@@ -24,10 +24,10 @@ class MainLayout2 extends Layout
             
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
              <link rel="stylesheet" href="<?= resource('css/modify.css'); ?>"> 
-              <link rel="stylesheet" href="<?= resource('css/style.css'); ?>"> 
+             <link rel="stylesheet" href="<?= resource('css/style.css'); ?>"> 
         </head>
         <body>
-
+             <?= new BackButton() ?>
             <main>
                 <?php $this->render_content(); ?>
             </main>

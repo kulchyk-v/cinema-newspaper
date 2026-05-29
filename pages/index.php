@@ -9,11 +9,11 @@ use App\Layouts\MainLayout;
 use App\Services\ArticleService;
 use Camezilla\Pages\Page;
 
-// 1. ATTIVAZIONE FONDAMENTALE DEL DB (Risolve il blocco "Error")
+// 1. ATTIVAZIONE FONDAMENTALE DEL DB
 connect_database();
 
 $articleService = new ArticleService();
-$articles = $articleService->get_all(); // Recupera i dati reali dal DB
+$articles = $articleService->get_all(); // Recupera tutti i dati reali dal DB
 
 $immagini_slider = ["foto/Carousel1.jpg", "foto/Carousel2.jpg", "foto/Carousel3.jpg","foto/Carousel4.jpg","foto/Carousel5.jpg","foto/Carousel6.jpg"];
 
@@ -56,19 +56,56 @@ $page = new class($pageData) extends Page {
             <?= new Navbar('home') ?>
 
             <section class="news-section">
-                <div class="news-header">
-                    <h2>Incontri in Evidenza</h2>
-                </div>
-                <div class="cards-grid">
-                    <?php if (!empty($data['articles']) && is_array($data['articles'])): ?>
-                        <?php foreach ($data['articles'] as $article): ?>
-                            <?= new ArticleItem($article) ?>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p style="text-align: center; color: #fff; grid-column: 1 / -1;">Nessun articolo trovato.</p>
-                    <?php endif; ?>
-                </div>
-            </section>
+    <div class="news-header">
+        <h2>Incontri in Evidenza</h2>
+    </div>
+    <div class="cards-grid">
+        <?php if (!empty($data['articles']) && is_array($data['articles'])): ?>
+            <?php 
+            $ha_articoli_validi = false;
+            
+            foreach ($data['articles'] as $article): 
+                
+                // --- 1. FILTRO CATEGORIA (Già presente) ---
+                if (is_object($article) && method_exists($article, 'get_category')) {
+                    $categoria_obj = $article->get_category();
+                    $categoria_valore = (is_object($categoria_obj) && isset($categoria_obj->value)) ? $categoria_obj->value : (string)$categoria_obj;
+                    
+                    if (strtolower($categoria_valore) === 'video' || strtolower($categoria_valore) === 'press_review') {
+                        continue;
+                    }
+                }
+
+                // --- 2. NUOVO FILTRO: ESCLUSIONE ARTICOLI DI BASSO LIVELLO ---
+                if (is_object($article)) {
+                    // Controlla se esiste il metodo per la priorità (adatta il nome se si chiama diversamente, es. get_priority)
+                    $metodo_priorita = method_exists($article, 'get_priority_level') ? 'get_priority_level' : (method_exists($article, 'get_priority') ? 'get_priority' : null);
+                    
+                    if ($metodo_priorita) {
+                        $priorita_obj = $article->$metodo_priorita();
+                        $priorita_valore = (is_object($priorita_obj) && isset($priorita_obj->value)) ? $priorita_obj->value : (string)$priorita_obj;
+                        
+                        // Se la priorità è 'low' (basso livello), lo saltiamo e non lo mostriamo in Home
+                        if (strtolower($priorita_valore) === 'low') {
+                            continue;
+                        }
+                    }
+                }
+                
+                $ha_articoli_validi = true;
+                ?>
+                <?= new ArticleItem($article) ?>
+            <?php endforeach; ?>
+
+            <?php if (!$ha_articoli_validi): ?>
+                <p style="text-align: center; color: #fff; grid-column: 1 / -1;">Nessun articolo in evidenza trovato per la Home.</p>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <p style="text-align: center; color: #fff; grid-column: 1 / -1;">Nessun articolo trovato.</p>
+        <?php endif; ?>
+    </div>
+</section>
         <?php }, $data);
     }
 };

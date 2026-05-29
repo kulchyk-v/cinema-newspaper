@@ -1,339 +1,905 @@
 /* ==========================================================================
-   modify.css - Foglio di Stile Unico per il Pannello Camezilla
+   MODIFY.CSS - DASHBOARD ADMIN MODERNA
+   CLASSI ORIGINALI MANTENUTE
    ========================================================================== */
 
-body, html {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+/* =========================
+   1. GLOBAL
+========================= */
+
+:root {
+
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4338ca;
+
+    --secondary: #0f172a;
+
+    --text: #0f172a;
+    --text-soft: #64748b;
+
+    --bg: #eef2ff;
+
+    --card: rgba(255,255,255,0.72);
+
+    --border: rgba(255,255,255,0.35);
+
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #f59e0b;
+
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+
+    --shadow-soft: 0 8px 30px rgba(15,23,42,0.08);
+    --shadow-hover: 0 20px 45px rgba(15,23,42,0.14);
+
+    --transition: all .28s cubic-bezier(.4,0,.2,1);
 }
 
-/* Layout Principale */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body,
+html {
+
+    min-height: 100%;
+
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+
+    color: var(--text);
+
+    background:
+        radial-gradient(circle at top left, #c7d2fe 0%, transparent 25%),
+        radial-gradient(circle at bottom right, #ddd6fe 0%, transparent 30%),
+        linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+/* =========================
+   2. LAYOUT
+========================= */
+
 .main-container {
+
+    width: 100%;
+    min-height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: 100vh;
-    padding: 40px 20px;
-    box-sizing: border-box;
+
+    padding: 60px 20px;
 }
 
 .tabella-wrapper {
+
     width: 100%;
-    max-width: 1000px;
+    max-width: 1180px;
 }
 
-/* Intestazioni di Pagina */
-.page-header, .page-header-main {
-    text-align: left;
-    margin-bottom: 25px;
+/* =========================
+   3. HEADER
+========================= */
+
+.page-header,
+.page-header-main {
+
+    margin-bottom: 35px;
 }
 
-.page-header h1, .page-header-main h1 {
-    font-size: 2rem;
-    color: #222;
-    margin: 0 0 5px 0;
-    font-weight: 700;
+.page-header h1,
+.page-header-main h1 {
+
+    font-size: 3rem;
+
+    font-weight: 900;
+
+    letter-spacing: -2px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #6366f1,
+            #8b5cf6
+        );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    margin-bottom: 10px;
 }
 
-.page-header p, .page-header-main p {
-    color: #666;
-    margin: 0;
-    font-size: 0.95rem;
+.page-header p,
+.page-header-main p {
+
+    font-size: 1rem;
+
+    color: var(--text-soft);
+
+    line-height: 1.6;
+
+    max-width: 600px;
 }
 
-/* Cerchio Icona Menu Principale */
+/* ICON BOX */
+
 .admin-icon-box {
-    background-color: #e3f2fd;
-    color: #007bff;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+
+    width: 85px;
+    height: 85px;
+
+    border-radius: 26px;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
-    font-size: 1.6rem;
-}
 
-/* Box Form di Inserimento / Modifica */
-.form-aggiunta {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    border: 1px solid #ddd;
-    margin-bottom: 30px;
-}
+    font-size: 2rem;
 
-.form-aggiunta h3 {
-    margin-top: 0;
-    margin-bottom: 18px;
-    color: #007bff;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Griglie di Input */
-.input-row-utenti {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 15px;
-    align-items: center;
-}
-
-.input-row-utenti input, .custom-select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-    outline: none;
-    font-size: 0.9rem;
-    background: #fff;
-}
-
-.input-row-utenti input:focus, .custom-select:focus {
-    border-color: #007bff;
-}
-
-/* Pulsanti */
-.btn-pubblica {
-    background: #007bff;
     color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.2s;
-    width: 100%;
-}
 
-.btn-pubblica:hover {
-    background: #0056b3;
-}
+    margin-bottom: 22px;
 
-/* Struttura Contenitore delle Righe (Tabella a Griglia o Elenco Flex) */
-.tabella-container {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    border: 1px solid #ddd;
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    box-shadow:
+        0 10px 40px rgba(99,102,241,.35);
+
+    position: relative;
+
     overflow: hidden;
 }
 
-/* Intestazione Colonne Utenti */
-.tabella-header-utenti {
-    display: grid;
-    grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr;
-    padding: 15px 20px;
-    background: #007bff;
-    color: white;
-    font-weight: bold;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+.admin-icon-box::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 140%;
+    height: 140%;
+
+    background: rgba(255,255,255,.18);
+
+    transform: rotate(35deg);
+
+    top: -120%;
+    left: -120%;
+
+    transition: .7s;
 }
 
-/* Righe Tabella Gestione Utenti (Grid a 4 Colonne) */
-.riga-tabella-utenti {
-    display: grid;
-    grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr;
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
-    background: #fff;
+.admin-icon-box:hover::before {
+
+    top: 100%;
+    left: 100%;
 }
 
-/* Righe del Menu Principale (Flex Layout Orizzontale a due blocchi) */
-.tabella-container > .riga-tabella {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 25px;
-    border-bottom: 1px solid #eee;
-    background: #fff;
-    transition: background-color 0.2s;
+/* =========================
+   4. FORM
+========================= */
+
+.form-aggiunta {
+
+    background: var(--card);
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-xl);
+
+    padding: 35px;
+
+    box-shadow: var(--shadow-soft);
+
+    margin-bottom: 35px;
+
+    transition: var(--transition);
+
+    position: relative;
+
+    overflow: hidden;
 }
 
-.riga-tabella:last-child, .riga-tabella-utenti:last-child {
-    border-bottom: none;
+.form-aggiunta:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: var(--shadow-hover);
 }
 
-.riga-tabella:hover, .riga-tabella-utenti:hover {
-    background-color: #fdfdfd;
-}
+.form-aggiunta h3 {
 
-.sezione {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-}
-
-/* Colonne Dati Utenti */
-.col-utente {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    font-size: 1.25rem;
+    font-weight: 800;
+
+    color: var(--secondary);
+
+    margin-bottom: 24px;
+}
+
+/* INPUT GRID */
+
+.input-row-utenti {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(190px,1fr));
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+.input-row-utenti input,
+.custom-select {
+
+    width: 100%;
+
+    border: 1px solid rgba(99,102,241,.15);
+
+    background: rgba(255,255,255,.9);
+
+    border-radius: 16px;
+
+    padding: 15px 18px;
+
+    font-size: .95rem;
+
+    color: var(--text);
+
+    transition: var(--transition);
+
+    outline: none;
+}
+
+.input-row-utenti input:focus,
+.custom-select:focus {
+
+    border-color: #6366f1;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 0 5px rgba(99,102,241,.12);
+}
+
+/* =========================
+   5. TABLE CONTAINER
+========================= */
+
+.tabella-container {
+
+    border-radius: 30px;
+
+    overflow: hidden;
+
+    background: rgba(255,255,255,.68);
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,.4);
+
+    box-shadow: var(--shadow-soft);
+}
+
+/* =========================
+   DASHBOARD ROWS
+========================= */
+
+.riga-tabella {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 26px 30px;
+
+    transition: var(--transition);
+
+    border-bottom:
+        1px solid rgba(148,163,184,.12);
+
+    background: rgba(255,255,255,.72);
+
+    backdrop-filter: blur(12px);
+}
+
+.riga-tabella:last-child {
+    border-bottom: none;
+}
+
+.riga-tabella:hover {
+
+    transform: translateY(-3px);
+
+    background: rgba(255,255,255,.95);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.06);
+}
+
+/* USERS TABLE */
+
+.tabella-header-utenti {
+
+    display: grid;
+
+    grid-template-columns:
+        1.3fr 1.2fr .8fr .8fr;
+
+    align-items: center;
+
+    padding: 22px 28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #6366f1
+        );
+
+    color: white;
+
+    font-size: .75rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.6px;
+
+    font-weight: 800;
+}
+
+.riga-tabella-utenti {
+
+    display: grid;
+
+    grid-template-columns:
+        1.3fr 1.2fr .8fr .8fr;
+
+    align-items: center;
+
+    padding: 24px 28px;
+
+    transition: var(--transition);
+
+    border-bottom:
+        1px solid rgba(148,163,184,.12);
+}
+
+.riga-tabella-utenti:last-child {
+    border-bottom: none;
+}
+
+.riga-tabella-utenti:hover {
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(99,102,241,.05),
+            transparent
+        );
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.sezione {
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    font-size: 1.08rem;
+
+    font-weight: 800;
+
+    color: var(--text);
+}
+
+.col-utente {
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .col-email {
-    color: #555;
-    font-size: 0.9rem;
-}
 
-/* Cerchi per Iniziali Avatar */
-.avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-weight: bold;
-    font-size: 0.85rem;
-}
+    color: var(--text-soft);
 
-.av-blue { background: #007bff; }
-.av-green { background: #28a745; }
-.av-amber { background: #ffc107; color: #333; }
-.av-purple { background: #6f42c1; }
+    font-size: .92rem;
+}
 
 .nome-completo {
-    font-weight: 600;
-    color: #333;
+
+    font-weight: 700;
 }
 
-/* Pillole dei Ruoli */
-.badge {
-    display: inline-block;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-align: center;
-}
+/* =========================
+   AVATAR
+========================= */
 
-.badge-admin { background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
-.badge-editor { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
-.badge-viewer { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+.avatar {
 
-/* Contenitore Bottoni Azione */
-.col-azioni {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 18px;
+
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-weight: 800;
+
+    font-size: .95rem;
+
+    box-shadow:
+        0 10px 20px rgba(0,0,0,.08);
+}
+
+.av-blue {
+    background: linear-gradient(135deg,#3b82f6,#2563eb);
+}
+
+.av-green {
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+}
+
+.av-amber {
+    background: linear-gradient(135deg,#facc15,#f59e0b);
+    color: #111;
+}
+
+.av-purple {
+    background: linear-gradient(135deg,#a855f7,#7e22ce);
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 15px;
+
+    border-radius: 999px;
+
+    font-size: .78rem;
+
+    font-weight: 800;
+
+    letter-spacing: .3px;
+}
+
+.badge-admin {
+
+    background: rgba(99,102,241,.12);
+
+    color: #4338ca;
+
+    border: 1px solid rgba(99,102,241,.18);
+}
+
+.badge-editor {
+
+    background: rgba(34,197,94,.12);
+
+    color: #15803d;
+
+    border: 1px solid rgba(34,197,94,.18);
+}
+
+.badge-viewer {
+
+    background: rgba(148,163,184,.12);
+
+    color: #475569;
+
+    border: 1px solid rgba(148,163,184,.18);
+}
+
+/* PRIORITY */
+
+.badge-priority {
+
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: 78px;
+
+    padding: 7px 14px;
+
+    border-radius: 999px;
+
+    font-size: .7rem;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+.badge-high {
+
+    background: rgba(239,68,68,.12);
+
+    color: #dc2626;
+}
+
+.badge-medium {
+
+    background: rgba(245,158,11,.15);
+
+    color: #b45309;
+}
+
+.badge-low {
+
+    background: rgba(148,163,184,.12);
+
+    color: #475569;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.col-azioni {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.btn-pubblica {
+
+    border: none;
+
+    width: 100%;
+
+    padding: 15px 22px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    color: white;
+
+    font-size: .95rem;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+    box-shadow:
+        0 10px 25px rgba(99,102,241,.25);
+}
+
+.btn-pubblica:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.01);
+
+    box-shadow:
+        0 18px 35px rgba(99,102,241,.35);
 }
 
 .btn-modifica {
-    background: #f8f9fa;
-    color: #007bff;
-    border: 1px solid #007bff;
-    padding: 6px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.85rem;
-    transition: all 0.2s;
+
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+
+    color: white;
+
+    font-weight: 700;
+
     text-decoration: none;
-    display: inline-block;
+
+    transition: var(--transition);
+
+    box-shadow:
+        0 8px 20px rgba(99,102,241,.25);
 }
 
 .btn-modifica:hover {
-    background: #007bff;
-    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(99,102,241,.35);
 }
 
 .btn-elimina {
-    background: #fff;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    padding: 6px 10px;
-    border-radius: 4px;
+
+    border: none;
+
+    padding: 11px 14px;
+
+    border-radius: 14px;
+
+    background: rgba(239,68,68,.1);
+
+    color: #dc2626;
+
     cursor: pointer;
-    transition: all 0.2s;
+
+    transition: var(--transition);
 }
 
 .btn-elimina:hover {
-    background: #dc3545;
+
+    background: #ef4444;
+
     color: white;
+
+    transform: translateY(-2px);
 }
 
-/* ==========================================================================
-   MEDIA QUERIES - Ottimizzazione Responsive
-   ========================================================================== */
+/* =========================
+   BACK BUTTON PREMIUM
+========================= */
 
-/* Dispositivi Tablet e Smartphone (Sotto i 768px) */
+.back-button-container {
+
+    width: 100%;
+
+    max-width: 1180px;
+
+    margin: 0 auto 30px auto;
+
+    padding: 20px 20px 0 20px;
+
+    display: flex;
+    align-items: center;
+}
+
+.btn-back-component {
+
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px 24px;
+
+    border: 1px solid rgba(255,255,255,.45);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.72);
+
+    backdrop-filter: blur(18px);
+
+    color: #0f172a;
+
+    font-size: .95rem;
+    font-weight: 700;
+
+    letter-spacing: .2px;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+
+    box-shadow:
+        0 10px 30px rgba(15,23,42,.08);
+}
+
+/* Glow */
+
+.btn-back-component::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(99,102,241,.10),
+            rgba(139,92,246,.08)
+        );
+
+    opacity: 0;
+
+    transition: opacity .25s ease;
+}
+
+.btn-back-component:hover {
+
+    transform: translateY(-3px);
+
+    background:
+        rgba(255,255,255,.94);
+
+    box-shadow:
+        0 18px 40px rgba(99,102,241,.18);
+}
+
+.btn-back-component:hover::before {
+
+    opacity: 1;
+}
+
+.btn-back-component:active {
+
+    transform: scale(.98);
+}
+
+/* Icona */
+
+.btn-back-component i {
+
+    color: #6366f1;
+
+    font-size: .95rem;
+
+    transition: transform .25s ease;
+}
+
+.btn-back-component:hover i {
+
+    transform: translateX(-4px);
+}
+
+/* MOBILE */
+
 @media screen and (max-width: 768px) {
+
+    .back-button-container {
+
+        padding: 15px 12px 0 12px;
+
+        margin-bottom: 20px;
+    }
+
+    .btn-back-component {
+
+        width: 100%;
+
+        justify-content: center;
+    }
+}
+/* =========================
+   MOBILE
+========================= */
+
+@media screen and (max-width: 768px) {
+
     .main-container {
-        padding: 20px 10px;
+        padding: 25px 12px;
     }
 
-    .form-aggiunta {
-        padding: 18px;
+    .page-header h1,
+    .page-header-main h1 {
+        font-size: 2.1rem;
     }
 
-    /* Nascondiamo l'header della tabella utenti perché le righe diventeranno card */
     .tabella-header-utenti {
         display: none;
     }
 
-    /* Trasformiamo la griglia degli utenti in un blocco verticale (stile card) */
+    .riga-tabella,
     .riga-tabella-utenti {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 20px;
-        align-items: flex-start;
-    }
 
-    /* Trasformiamo le righe flex del menu principale in verticale */
-    .tabella-container > .riga-tabella {
+        display: flex;
+
         flex-direction: column;
+
         align-items: flex-start;
-        gap: 15px;
-        padding: 20px;
+
+        gap: 16px;
+
+        padding: 22px;
     }
 
-    /* Allineiamo i pulsanti azione a tutta larghezza sui dispositivi mobili */
     .col-azioni {
+
         width: 100%;
-        justify-content: flex-start;
-        margin-top: 5px;
     }
-    
-    .btn-modifica, .btn-elimina {
-        flex: 1;
+
+    .btn-modifica,
+    .btn-elimina {
+
+        width: 100%;
+
         text-align: center;
-        padding: 10px; /* Più facili da cliccare touch */
+    }
+
+    .form-aggiunta {
+
+        padding: 24px;
     }
 }
 
-/* Dispositivi Mobile Stretti (Sotto i 480px) */
 @media screen and (max-width: 480px) {
-    .page-header h1, .page-header-main h1 {
-        font-size: 1.6rem;
+
+    .page-header h1,
+    .page-header-main h1 {
+        font-size: 1.8rem;
     }
 
-    /* Forza gli elementi del form ad andare a capo singolarmente */
     .input-row-utenti {
         grid-template-columns: 1fr;
     }
 
     .col-utente {
+
         flex-direction: column;
+
         align-items: flex-start;
-        gap: 8px;
     }
 
-    .avatar {
-        width: 40px;
-        height: 40px; /* Leggermente più grande per il touch */
+    .admin-icon-box {
+
+        width: 72px;
+        height: 72px;
+
+        border-radius: 22px;
     }
 }
